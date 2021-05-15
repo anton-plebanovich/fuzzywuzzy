@@ -1,10 +1,10 @@
 plugins {
     id("com.android.library")
-    kotlin("multiplatform") version "1.4.32"
-    id("maven-publish")
+    kotlin("multiplatform")
+    id("publish")
 }
 
-group = "com.shabinder.fuzzywuzzy"
+group = "io.github.shabinder"
 version = "1.0"
 
 repositories {
@@ -13,7 +13,7 @@ repositories {
 }
 
 kotlin {
-    android() {
+    android {
         publishLibraryVariants("release", "debug")
         compilations.all {
             kotlinOptions {
