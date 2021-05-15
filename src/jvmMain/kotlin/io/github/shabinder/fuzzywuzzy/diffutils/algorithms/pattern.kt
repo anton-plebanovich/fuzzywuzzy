@@ -14,6 +14,6 @@
  *  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.shabinder.fuzzywuzzy.diffutils.algorithms
+package io.github.shabinder.fuzzywuzzy.diffutils.algorithms
 
 actual fun pattern(): String = "(?U)[^\\p{Alnum}]"
