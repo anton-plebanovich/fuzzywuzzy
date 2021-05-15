@@ -27,12 +27,14 @@ afterEvaluate {
         repositories {
             maven {
                 name = "maven"
-                val repositoryId = "SONATYPE_REPOSITORY_ID".byProperty ?: ""//?: error("Missing env variable: SONATYPE_REPOSITORY_ID")
-                /*setUrl{
-                    "https://s01.oss.sonatype.org/service/local/staging/deployByRepositoryId/${repositoryId}/"
-                }*/
+                val freshRepoID = "SONATYPE_REPOSITORY_ID".byProperty
+                val manualRepoID = "MANUAL_REPOSITORY".byProperty
+                val repositoryId = if(freshRepoID.isNullOrBlank()) manualRepoID else freshRepoID
                 logger.log(LogLevel.WARN,"-$repositoryId-")
-                 url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                setUrl{
+                    "https://s01.oss.sonatype.org/service/local/staging/deployByRepositoryId/${repositoryId}/"
+                }
+                // url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 credentials {
                     username = "SONATYPE_USERNAME".byProperty
                     password = "SONATYPE_PASSWORD".byProperty
@@ -52,14 +54,9 @@ afterEvaluate {
             // TODO: instead of a single empty Javadoc JAR, generate real documentation for each module
         }
         publications {
-            create<MavenPublication>("release") {
-                if (plugins.hasPlugin("com.android.library")) {
-                    from(components["release"])
-                } else {
-                    from(components["java"])
-                }
+            withType<MavenPublication> {
+
                 artifact(javadocJar)
-//                artifact(sourcesJar)
 
                 pom {
                     if (!"USE_SNAPSHOT".byProperty.isNullOrBlank()) {
@@ -95,26 +92,18 @@ afterEvaluate {
             }
         }
 
-        val signingKey = "GPG_PRIVATE_KEY".byProperty
+        val signingKey = "GPG_PRIVATE_KEY".byProperty ?: "GPG_FILE".byProperty?.let { file(it).readText() }
         val signingPwd = "GPG_PRIVATE_PASSWORD".byProperty
         if (signingKey.isNullOrBlank() || signingPwd.isNullOrBlank()) {
-//            logger.info("Signing Disable as the PGP key was not found")
-            //error("Signing Disable as the PGP key was not found")
+            logger.info("Signing Disable as the PGP key was not found")
         } else {
-            //logger.warn("Using $signingKey - $signingPwd")
-            /*signing {
-                //useInMemoryPgpKeys(signingKey, signingPwd)
-                sign(publishing.publications["release"])
+            signing {
+                useInMemoryPgpKeys(signingKey, signingPwd)
                 sign(publishing.publications)
                 sign(configurations.archives.get())
-            }*/
-        }
-        signing {
-            //useInMemoryPgpKeys(signingKey, signingPwd)
-            sign(publishing.publications)
-            sign(configurations.archives.get())
+            }
         }
     }
 }
 
-val String.byProperty: String? get() = gradleLocalProperties(rootDir).getProperty(this) ?: System.getenv(this)
+val String.byProperty: String? get() = gradleLocalProperties(rootDir).getProperty(this) ?: project.findProperty(this) as? String ?: System.getenv(this)
