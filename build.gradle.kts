@@ -14,7 +14,15 @@ repositories {
 }
 
 kotlin {
-    android()
+    
+    android {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
+
     jvm()
     macosX64()
     iosArm32()
@@ -104,5 +112,10 @@ kotlin {
 }
 
 android {
+    compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    defaultConfig {
+        minSdk = 26
+        targetSdk = 33
+    }
 }
