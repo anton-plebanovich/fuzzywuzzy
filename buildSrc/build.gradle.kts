@@ -7,17 +7,9 @@ repositories {
     mavenCentral()
 }
 
-kotlinDslPluginOptions.experimentalWarning.set(false)
-
-object Plugins {
-    const val AGP = "4.2.0"
-    const val DOKKA = "1.4.32"
-    const val KOTLIN = "1.4.32"
-}
-
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${Plugins.KOTLIN}")
-    implementation("com.android.tools.build:gradle:${Plugins.AGP}")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:${Plugins.DOKKA}")
-    implementation("org.jetbrains.dokka:dokka-core:${Plugins.DOKKA}")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20")
+    implementation("com.android.tools.build:gradle:7.4.2")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.8.20")
+    implementation("org.jetbrains.dokka:dokka-core:1.8.20")
 }
