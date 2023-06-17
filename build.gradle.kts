@@ -1,8 +1,8 @@
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    id("publish")
-    id("maven-publish")
+    `publish`
+    `maven-publish`
 }
 
 group = "io.github.shabinder"
@@ -14,7 +14,7 @@ repositories {
 }
 
 kotlin {
-    
+
     android {
         compilations.all {
             kotlinOptions {
@@ -117,5 +117,15 @@ android {
     defaultConfig {
         minSdk = 26
         targetSdk = 33
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "io.github.shabinder"
+            artifactId = "fuzzywuzzy"
+            version = "2.0.0"
+        }
     }
 }
