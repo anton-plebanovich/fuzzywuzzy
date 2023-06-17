@@ -12,47 +12,94 @@ repositories {
     mavenCentral()
 }
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+
 kotlin {
-    targetHierarchy.default()
-
-    android {
-        publishLibraryVariants("release", "debug")
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
-        }
-    }
-    iosX64()
+    android()
+    jvm()
+    macosX64()
+    iosArm32()
     iosArm64()
+    iosX64()
+    watchosArm32()
+    watchosArm64()
+    watchosX86()
+    watchosX64()
+    watchosDeviceArm64()
+    tvosArm64()
+    tvosX64()
+
+    macosArm64()
     iosSimulatorArm64()
+    watchosSimulatorArm64()
+    tvosSimulatorArm64()
+    watchosDeviceArm64()
 
-    sourceSets {
-        val appleMain by getting
-        val appleTest by getting
+    mingwX64()
+    mingwX86()
+    linuxX64()
+    linuxArm32Hfp()
+    linuxMips32()
 
-        val commonMain by getting
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
 
-        val iosArm64Main by getting
-        val iosArm64Test by getting
-        
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting
-        val iosSimulatorArm64Test by getting
-        val iosTest by getting
+    val commonMain by sourceSets.getting
+    val commonTest by sourceSets.getting
 
-        val iosX64Main by getting
-        val iosX64Test by getting
+    val commonJvmMain by sourceSets.creating {
+        dependsOn(commonMain)
+    }
+    val commonJvmTest by sourceSets.creating {
+        dependsOn(commonTest)
+        dependsOn(commonJvmMain)
+    }
 
-        val nativeMain by getting
-        val nativeTest by getting
+    val jvmMain by sourceSets.getting {
+        dependsOn(commonMain)
+    }
+    val jvmTest by sourceSets.getting {
+        dependsOn(commonTest)
+    }
+
+    val nativeCommonMain by sourceSets.creating
+    nativeCommonMain.dependsOn(commonMain)
+    val nativeCommonTest by sourceSets.creating
+    nativeCommonTest.dependsOn(commonTest)
+
+    val darwinMain by sourceSets.creating
+    darwinMain.dependsOn(nativeCommonMain)
+
+    val pthreadMain by sourceSets.creating
+    pthreadMain.dependsOn(nativeCommonMain)
+
+    val mingwMain by sourceSets.creating
+    mingwMain.dependsOn(nativeCommonMain)
+
+    val pthreadAndroidMain by sourceSets.creating
+    pthreadAndroidMain.dependsOn(nativeCommonMain)
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
+        val mainSourceSet = compilations.getByName("main").defaultSourceSet
+        val testSourceSet = compilations.getByName("test").defaultSourceSet
+
+        mainSourceSet.dependsOn(when {
+            konanTarget.family.isAppleFamily -> darwinMain
+            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX -> pthreadMain
+            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW -> mingwMain
+            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID -> pthreadAndroidMain
+            else -> nativeCommonMain
+        })
+
+        testSourceSet.dependsOn(nativeCommonTest)
+    }
+
+    commonMain.dependencies {}
+
+    commonTest.dependencies {
+        implementation(kotlin("test-common"))
+        implementation(kotlin("test-annotations-common"))
     }
 }
 
