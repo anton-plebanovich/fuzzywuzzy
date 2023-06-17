@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("publish")
+    id("maven-publish")
 }
 
 group = "io.github.shabinder"
