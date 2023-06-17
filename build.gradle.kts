@@ -27,9 +27,11 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    macosX64()
 
     sourceSets {
+        val appleMain by getting
+        val appleTest by getting
+
         val commonMain by getting
         val commonTest by getting {
             dependencies {
@@ -37,6 +39,20 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
+
+        val iosArm64Main by getting
+        val iosArm64Test by getting
+        
+        val iosMain by getting
+        val iosSimulatorArm64Main by getting
+        val iosSimulatorArm64Test by getting
+        val iosTest by getting
+
+        val iosX64Main by getting
+        val iosX64Test by getting
+
+        val nativeMain by getting
+        val nativeTest by getting
     }
 }
 
